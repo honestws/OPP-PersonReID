@@ -80,7 +80,7 @@ After downloading *teacher.pth*, please put it into *./net/* folder.
 
 Please enter the main folder, Train the WSC model by
 ```bash
-python main.py --dream_person 1 --ms 5000 --T 2.0 --lamb 0.05 --sigma 1.0 --batch_size 30  --data_dir your_project_path/WSC-PersonReID/Market-1501/pytorch/
+python main.py --dream_person 1 --ms 5000 --T 2.0 --lamb 0.05 --sigma 1.0 --batch_size 32  --data_dir your_project_path/WSC-PersonReID/Market-1501/pytorch/
 ```
 `--dream_person` num of person for dreaming.
 
