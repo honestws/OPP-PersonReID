@@ -100,12 +100,12 @@ if __name__ == '__main__':
     second = run_time - 3600 * hour - 60 * minute
     print(f'Runing time：{hour}h-{minute}m-{second}s')
 
+    # save network
+    save_network(ema_model)
+
     # evaluate
     eva = Evaluator(opt, ema_model)
     query_feature = eva.extract_feature(dataloader='query')
     gallery_feature = eva.extract_feature(dataloader='gallery')
     eva.evaluate(query_feature, gallery_feature)
-
-    # save network
-    save_network(ema_model)
     writer.close()
