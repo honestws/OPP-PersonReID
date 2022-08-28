@@ -84,7 +84,7 @@ if __name__ == '__main__':
         model.inc_block.reset_classifier(camera_person)
         ema_model.inc_block.reset_classifier(camera_person)
 
-        for e in tqdm(range(1, opt.epochs+1), desc='1. Training within camera view'):
+        for e in tqdm(range(1, 2*opt.epochs+1), desc='1. Training within camera view'):
             tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list)
 
         dream_dataloader = dr.dream_images()
