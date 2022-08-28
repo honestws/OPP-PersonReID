@@ -59,7 +59,7 @@ class Trainer(object):
                 logit[:, sum(camera_person_list[:ith]):sum(camera_person_list[:ith+1])],
                 reassigned_labels)
             con_loss = self.con_loss(z, reassigned_labels)
-            loss = cross_entropy_loss + con_loss
+            loss = cross_entropy_loss + self.opt.main_loss_multiplier * con_loss
             self.optimizer_ctr.zero_grad()
             loss.backward()
             self.optimizer_ctr.step()
