@@ -6,7 +6,7 @@ def argparse_option():
     parser.add_argument('--dream_person', type=int, default=1, help='num of person for dreaming')
     parser.add_argument('--batch_size', type=int, default=32, help='batch_size')
     parser.add_argument('--num_workers', type=int, default=0, help='num of workers to use')
-    parser.add_argument('--epochs', type=int, default=150, help='number of training epochs')
+    parser.add_argument('--epochs', type=int, default=50, help='number of training epochs')
 
     # optimization
     parser.add_argument('--lr', type=float, default=0.05, help='learning rate')
