@@ -29,7 +29,7 @@ class Evaluator(object):
         self.ema_model = ema_model
 
     def extract_feature(self, dataloader='gallery'):
-        for iter, data in enumerate(self.dataloaders):
+        for iter, data in enumerate(self.dataloaders[dataloader]):
             img, label = data
             n, c, h, w = img.size()
             ff = torch.FloatTensor(n, 2048).zero_().cuda()
