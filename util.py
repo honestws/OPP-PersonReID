@@ -261,5 +261,4 @@ def load_network(net, path=None):
         load_path = os.path.join('./net', 'result.pth')
         state_dict = torch.load(load_path)
         net.load_state_dict(state_dict, strict=False)
-
     return net
