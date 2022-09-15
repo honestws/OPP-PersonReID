@@ -102,7 +102,8 @@ if __name__ == '__main__':
     #
     # # save network
     # save_network(ema_model)
-    load_network(ema_model, path='./net/result.pth')
+    # ema_model.inc_block.reset_classifier(3541)
+    load_network(ema_model)
 
     # evaluate
     eva = Evaluator(opt, ema_model)

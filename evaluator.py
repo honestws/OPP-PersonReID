@@ -1,3 +1,4 @@
+import math
 import os
 import numpy as np
 import torch
@@ -10,6 +11,10 @@ from util import DataFolder, fliplr, compute_mAP
 class Evaluator(object):
     def __init__(self, opt, ema_model):
         self.opt = opt
+        self.msc = []
+        for s in self.opt.msc:
+            s_f = float(s)
+            self.msc.append(math.sqrt(s_f))
         data_transforms = transforms.Compose([
             transforms.Resize((256, 128), interpolation=InterpolationMode.BICUBIC),
             transforms.ToTensor(),
@@ -38,7 +43,7 @@ class Evaluator(object):
                 if i == 1:
                     img = fliplr(img)
                 input_img = img.cuda()
-                for scale in self.opt.msc:
+                for scale in self.msc:
                     if scale != 1:
                         # bicubic is only available in pytorch >= 1.1
                         input_img = nn.functional.interpolate(input_img, scale_factor=scale, mode='bicubic',
@@ -97,7 +102,7 @@ class Evaluator(object):
         CMC = torch.IntTensor(len(self.gallery_label)).zero_()
         ap = 0.0
         # print(query_label)
-        for i in range(len(query_label)):
+        for i in range(len(self.query_label)):
             ap_tmp, CMC_tmp = self.mAP(query_feature[i], self.query_label[i], self.query_cam[i],
                                        gallery_feature, self.gallery_label, self.gallery_cam)
             if CMC_tmp[0] == -1:
