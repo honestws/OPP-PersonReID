@@ -40,10 +40,10 @@ class Evaluator(object):
                 input_img = img.cuda()
                 for scale in self.opt.msc:
                     if scale != 1:
-                        # bicubic is only available in pytorch>= 1.1
+                        # bicubic is only available in pytorch >= 1.1
                         input_img = nn.functional.interpolate(input_img, scale_factor=scale, mode='bicubic',
                                                               align_corners=False)
-                    outputs = self.ema_model(input_img)
+                    _, _, outputs = self.ema_model(input_img)
                     ff += outputs
             fnorm = torch.norm(ff, p=2, dim=1, keepdim=True)
             ff = ff.div(fnorm.expand_as(ff))
