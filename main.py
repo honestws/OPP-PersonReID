@@ -102,6 +102,7 @@ if __name__ == '__main__':
 
     # save network
     save_network(ema_model)
+    load_network(ema_model)
 
     # evaluate
     eva = Evaluator(opt, ema_model)

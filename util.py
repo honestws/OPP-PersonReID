@@ -249,11 +249,17 @@ def save_network(net):
     torch.save(net.cpu().state_dict(), save_path)
 
 
-def load_network(net):
-    save_path = os.path.join('./net', 'teacher.pth')
-    base_weights = torch.load(save_path)
-    new_state_dict = OrderedDict()
-    for k, v in base_weights.items():
-        new_state_dict[k.replace('model', 'encoder', 1)] = v
-    net.load_state_dict(new_state_dict, strict=False)
+def load_network(net, path=None):
+    if path is None:
+        save_path = os.path.join('./net', 'teacher.pth')
+        base_weights = torch.load(save_path)
+        new_state_dict = OrderedDict()
+        for k, v in base_weights.items():
+            new_state_dict[k.replace('model', 'encoder', 1)] = v
+        net.load_state_dict(new_state_dict, strict=False)
+    else:
+        load_path = os.path.join('./net', 'result.pth')
+        state_dict = torch.load(load_path)
+        net.load_state_dict(state_dict, strict=False)
+
     return net
