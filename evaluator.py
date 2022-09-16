@@ -37,7 +37,7 @@ class Evaluator(object):
         for iter, data in enumerate(self.dataloaders[dataloader]):
             img, label, _ = data
             n, c, h, w = img.size()
-            ff = torch.FloatTensor(n, 2048).zero_().cuda()
+            ff = torch.FloatTensor(n, 512).zero_().cuda()
 
             for i in range(2):
                 if i == 1:

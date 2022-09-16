@@ -22,11 +22,11 @@ def create_model(ema=False):
 
 def create_optimizer(opt, model, optimizer):
     ignored_params = list(map(id, model.head.parameters())) + \
-                     list(map(id, model.inc_block.parameters())) + \
+                     list(map(id, model.classifier.parameters())) + \
                      list(map(id, model.encoder.fc.parameters()))
     base_params = filter(lambda p: id(p) not in ignored_params, model.parameters())
     if optimizer == 'soft-label':
-        incr_params = model.inc_block.parameters()
+        incr_params = model.classifier.parameters()
         optimizer = optim.SGD([
             {'params': base_params, 'lr': 0.01 * opt.lr},
             {'params': incr_params, 'lr': opt.lr}],
@@ -34,7 +34,7 @@ def create_optimizer(opt, model, optimizer):
         return optimizer
     elif optimizer == 'contrastive':
         head_params = model.head.parameters()
-        incr_params = model.inc_block.parameters()
+        incr_params = model.classifier.parameters()
         optimizer = optim.SGD([
             {'params': base_params, 'lr': 0.1 * opt.lr},
             {'params': head_params, 'lr': 10 * opt.lr},

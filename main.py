@@ -12,7 +12,7 @@ from evaluator import Evaluator
 from lossfun import MixLoss
 from trainer import Trainer
 from tensorboardX import SummaryWriter
-from util import RandomErasing, DataFolder, save_network, WeightEMA, load_network, TransformTwice
+from util import RandomErasing, DataFolder, save_network, WeightEMA, load_network, TransformTwice, fuse_all_conv_bn
 from pytorch_metric_learning import losses
 
 if __name__ == '__main__':
@@ -81,8 +81,8 @@ if __name__ == '__main__':
     #     print('Number of camera person IDs is {}.'.format(camera_person))
     #     camera_person_list.append(camera_person)
     #
-    #     model.inc_block.reset_classifier(camera_person)
-    #     ema_model.inc_block.reset_classifier(camera_person)
+    #     model.classifier.reset_classifier(camera_person)
+    #     ema_model.classifier.reset_classifier(camera_person)
     #
     #     for e in tqdm(range(1, 5*opt.epochs+1), desc='1. Training within camera view'):
     #         tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     #
     #     for e in tqdm(range(1, opt.epochs+1), desc='4. Training across camera view'):
     #         tr.train_across_camera_view(train_dataloader, dream_dataloader, e, i)
-    #     print('Current output dimension is {}.'.format(ema_model.inc_block.output_dim))
+    #     print('Current output dimension is {}.'.format(ema_model.classifier.output_dim))
     # end_time = time.time()
     # run_time = round(end_time - begin_time)
     # hour = run_time // 3600
@@ -102,12 +102,15 @@ if __name__ == '__main__':
     #
     # # save network
     # save_network(ema_model)
-    # ema_model.inc_block.reset_classifier(3541)
-    load_network(ema_model)
+    # ema_model.classifier.reset_classifier(3541)
+    ema_model = load_network(ema_model)
+    ema_model = ema_model.eval()
+    ema_model = fuse_all_conv_bn(ema_model)
 
     # evaluate
     eva = Evaluator(opt, ema_model)
-    query_feature = eva.extract_feature(dataloader='query')
-    gallery_feature = eva.extract_feature(dataloader='gallery')
+    with torch.no_grad():
+        query_feature = eva.extract_feature(dataloader='query')
+        gallery_feature = eva.extract_feature(dataloader='gallery')
     eva.evaluate(query_feature, gallery_feature)
     writer.close()

@@ -91,7 +91,7 @@ class DeepInversionDreamer(object):
         net = self.net
         criterion = self.criterion
         img_original = self.image_resolution
-        logit_dim = net.inc_block.output_dim
+        logit_dim = net.classifier.output_dim
         if logit_dim > self.ms:
             self.ms = logit_dim
         if self.dream_person*logit_dim > self.ms:

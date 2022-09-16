@@ -44,7 +44,7 @@ class Trainer(object):
         for k, v in average(buffer).items():
             feat_buffer.append(v)
         self.feat_buffer = torch.cat(feat_buffer, dim=0)
-        assert self.feat_buffer.size(0) == self.ema_model.inc_block.output_dim
+        assert self.feat_buffer.size(0) == self.ema_model.classifier.output_dim
 
     def train_within_camera_view(self, train_dataloader, epoch, ith, lab_dict, camera_person_list):
         for step, (images, labels, indices) in enumerate(train_dataloader):

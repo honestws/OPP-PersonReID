@@ -52,8 +52,9 @@ class IncrementalBlock(nn.Module):
 
     def forward(self, x):
         x = self.add_block(x)
+        f = x
         x = self.classifier(x)
-        return x
+        return x, f
 
     def reset_classifier(self, num_new_ids):
         past_weight = self.classifier[0].weight.data
@@ -85,7 +86,7 @@ class ResNet50(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(512, feat_dim)
         )
-        self.inc_block = IncrementalBlock(2048, 0)
+        self.classifier = IncrementalBlock(2048, 0)
 
     def forward(self, x):
         x = self.encoder.conv1(x)
@@ -98,12 +99,12 @@ class ResNet50(nn.Module):
         x = self.encoder.layer4(x)
         x = self.encoder.avgpool(x)
         x = x.view(x.size(0), x.size(1))
-        logit = self.inc_block(x)
+        logit, feat = self.classifier(x)
         z = F.normalize(self.head(x), dim=1)
         # z for contrastive learning; dim=128
         # logit for incremental soft-label learning; dim++
-        # x for the Re-ID evaluation and feature buffer; dim=2048
-        return z, logit, x
+        # feat for the Re-ID evaluation and feature buffer; dim=512
+        return z, logit, feat
 
 
 if __name__ == '__main__':

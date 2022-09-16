@@ -3,7 +3,9 @@ import random
 import math
 import numpy as np
 import torch
+from torch import nn
 from torch.utils.data import TensorDataset
+from torch.nn.utils import fuse_conv_bn_eval
 from torchvision.datasets import ImageFolder
 from collections import OrderedDict
 
@@ -255,6 +257,8 @@ def load_network(net, path=None):
         base_weights = torch.load(save_path)
         new_state_dict = OrderedDict()
         for k, v in base_weights.items():
+            if 'classifier.classifier' in k:
+                continue
             new_state_dict[k.replace('model', 'encoder', 1)] = v
         net.load_state_dict(new_state_dict, strict=False)
     else:
@@ -262,3 +266,20 @@ def load_network(net, path=None):
         state_dict = torch.load(load_path)
         net.load_state_dict(state_dict, strict=False)
     return net
+
+
+def fuse_all_conv_bn(model):
+    stack = []
+    for name, module in model.named_children():
+        if list(module.named_children()):
+            fuse_all_conv_bn(module)
+
+        if isinstance(module, nn.BatchNorm2d):
+            if not stack:
+                continue
+            if isinstance(stack[-1][1], nn.Conv2d):
+                setattr(model, stack[-1][0], fuse_conv_bn_eval(stack[-1][1], module))
+                setattr(model, name, nn.Identity())
+        else:
+            stack.append((name, module))
+    return model
