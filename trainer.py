@@ -104,8 +104,8 @@ class Trainer(object):
             w = F.normalize(a * b, p=1, dim=1)
             logit_max, _ = torch.max(logit, dim=1, keepdim=True)
             logit = logit - logit_max.detach()
-            sft_loss = torch.trace(-1 * w @ F.log_softmax(logit, dim=1).t())
-            self.writer.add_scalar("Soft-label learning loss", sft_loss.item(), global_step=epoch)
+            cvc_loss = torch.trace(-1 * w @ F.log_softmax(logit, dim=1).t())
+            self.writer.add_scalar("Soft-label learning loss", cvc_loss.item(), global_step=epoch)
 
             if torch.cuda.is_available():
                 images_tr_1, images_tr_2 = images_tr_1.cuda(), images_tr_2.cuda()
@@ -147,7 +147,7 @@ class Trainer(object):
             mix_loss = self.mix_loss(logits, mixed_target)
             self.writer.add_scalar("Mix loss", mix_loss.item(), global_step=epoch)
 
-            loss = mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * sft_loss
+            loss = mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * cvc_loss
             self.optimizer_sft.zero_grad()
             loss.backward()
             self.optimizer_sft.step()

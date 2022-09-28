@@ -30,13 +30,13 @@ class DreamDataset(TensorDataset):
 
 
 class WeightEMA(object):
-    def __init__(self, opt, model, ema_model, alpha=0.999):
+    def __init__(self, opt, model, ema_model, alpha=0.9999):
         self.model = model
         self.ema_model = ema_model
         self.alpha = alpha
         self.params = list(model.state_dict().values())
         self.ema_params = list(ema_model.state_dict().values())
-        self.wd = 0.002 * opt.lr
+        self.wd = 0.001 * opt.lr
 
         for param, ema_param in zip(self.params, self.ema_params):
             param.data.copy_(ema_param.data)
@@ -262,9 +262,12 @@ def load_network(net, path=None):
             new_state_dict[k.replace('model', 'encoder', 1)] = v
         net.load_state_dict(new_state_dict, strict=False)
     else:
-        load_path = os.path.join('./net', 'result.pth')
-        state_dict = torch.load(load_path)
-        net.load_state_dict(state_dict, strict=False)
+        base_weights = torch.load(path)
+        new_state_dict = OrderedDict()
+        for k, v in base_weights.items():
+            if 'classifier.classifier' in k:
+                continue
+        net.load_state_dict(new_state_dict, strict=False)
     return net
 
 

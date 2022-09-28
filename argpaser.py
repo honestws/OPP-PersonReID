@@ -9,14 +9,14 @@ def argparse_option():
     parser.add_argument('--epochs', type=int, default=50, help='number of training epochs')
 
     # optimization
-    parser.add_argument('--lr', type=float, default=0.05, help='learning rate')
+    parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='weight decay')
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 
     # model dataset
     parser.add_argument('--dataset', type=str, default='Market-1501',
                         choices=['Market-1501', 'DukeMTMC'], help='dataset')
-    parser.add_argument('--data_folder', type=str, default='~/codes/Person_reID_baseline/MSMT17/pytorch',
+    parser.add_argument('--data_folder', type=str, default='~/codes/WSC-PersonReID/Market-1501/pytorch',
                         help='path to the custom dataset')
 
     # dream parameters

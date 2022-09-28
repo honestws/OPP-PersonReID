@@ -33,11 +33,9 @@ def create_optimizer(opt, model, optimizer):
             weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
         return optimizer
     elif optimizer == 'contrastive':
-        head_params = model.head.parameters()
         incr_params = model.classifier.parameters()
         optimizer = optim.SGD([
             {'params': base_params, 'lr': 0.1 * opt.lr},
-            {'params': head_params, 'lr': 10 * opt.lr},
             {'params': incr_params, 'lr': 10 * opt.lr}],
             weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
         return optimizer

@@ -93,7 +93,7 @@ class Evaluator(object):
             else:
                 labels.append(int(label))
             camera_id.append(int(camera[0]))
-        return camera_id, labels
+        return np.array(camera_id), np.array(labels)
 
     def evaluate(self, query_feature, gallery_feature):
         query_feature = query_feature.cuda()
