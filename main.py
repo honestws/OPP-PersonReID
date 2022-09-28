@@ -35,8 +35,8 @@ if __name__ == '__main__':
     cross_entropy_loss = nn.CrossEntropyLoss()
 
     # create optimizer
-    optimizer_sft = create_optimizer(opt, model, optimizer='soft-label')  # mix
-    optimizer_ctr = create_optimizer(opt, model, optimizer='contrastive')
+    optimizer_sft = create_optimizer(opt, model, optimizer='cci')  # mix
+    optimizer_ctr = create_optimizer(opt, model, optimizer='con')
     optimizer_ema = WeightEMA(opt, model, ema_model)
 
     # create image dataset
