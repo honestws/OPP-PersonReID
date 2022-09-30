@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # create and load teacher model
     model = create_model()
     ema_model = create_model(ema=True)
-    load_network(ema_model)
+    ema_model = load_network(ema_model)
 
     # create loss functions
     con_loss = losses.ContrastiveLoss()
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     cross_entropy_loss = nn.CrossEntropyLoss()
 
     # create optimizer
-    optimizer_sft = create_optimizer(opt, model, optimizer='cci')  # mix
+    optimizer_sft = create_optimizer(opt, model, optimizer='cci')
     optimizer_ctr = create_optimizer(opt, model, optimizer='con')
     optimizer_ema = WeightEMA(opt, model, ema_model)
 
