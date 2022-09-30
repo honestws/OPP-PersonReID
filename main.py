@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # save network
     save_network(ema_model)
     # ema_model.classifier.reset_classifier(3541)
-    ema_model = load_network(ema_model)
+    # ema_model = load_network(ema_model)
     ema_model = ema_model.eval()
     ema_model = fuse_all_conv_bn(ema_model)
 
