@@ -27,6 +27,6 @@ for root, dirs, files in os.walk(test_path):
         dst_path = gallery_save_path + '/' + ID[0]
         if not os.path.isdir(dst_path):
             os.mkdir(dst_path)
-            dst_path = query_save_path + '/' + ID[0]  # first image is used as val image
+            dst_path = query_save_path + '/' + ID[0]  # first image is used as query image
             os.mkdir(dst_path)
         copyfile(src_path, dst_path + '/' + name)
