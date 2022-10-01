@@ -7,6 +7,7 @@ from torch import optim
 from torch.backends import cudnn
 from torch.utils.data import Subset
 from model import ResNet50
+from util import list_split
 
 
 def create_model(ema=False):
@@ -67,23 +68,24 @@ def get_camera_person_info(_train_dataset, ith_indices):
     return camera_person, lab_dict
 
 
-def create_continual_index_list(opt, _train_dataset):
-    if opt.dataset == 'Market-1501':
+def create_continual_index_list(dataset, _train_dataset):
+    if dataset == 'Market-1501':
         # format: 0002_c1s1_000451_03.jpg
-        # six cameras
+        # 6 cameras
         sequence_dict = {}
         for i, (img_path, t) in enumerate(_train_dataset.imgs):
             img_name = os.path.basename(img_path)
-            cs = img_name.split('_')[1]
-            if cs in sequence_dict.keys():
-                sequence_dict[cs].append(i)
+            ts = img_name.split('_')[1]
+            if ts in sequence_dict.keys():
+                sequence_dict[ts].append(i)
             else:
-                sequence_dict[cs] = [i]
+                sequence_dict[ts] = [i]
         continual_index_list = list(sequence_dict.values())
         return continual_index_list
 
-    elif opt.dataset == 'DukeMTMC':
-        # name format: 0315_c5_f0112364.jpg
+    elif dataset == 'DukeMTMC':
+        # format: 0315_c5_f0112364.jpg
+        # 8 cameras
         sequence_dict = {}
         for i, (img_path, t) in enumerate(_train_dataset.imgs):
             img_name = os.path.basename(img_path)
@@ -92,9 +94,17 @@ def create_continual_index_list(opt, _train_dataset):
                 sequence_dict[cs].append(i)
             else:
                 sequence_dict[cs] = [i]
-        continual_index_list = list(sequence_dict.values())
+        # split for data balance
+        new_sequence_dict = {}
+        split_index = 0
+        for k, v in sequence_dict.items():
+            if len(v) > 1600:
+                new_sequence_dict, split_index = list_split(v, new_sequence_dict, split_index)
+            else:
+                new_sequence_dict[k] = v
+        continual_index_list = list(new_sequence_dict.values())
         return continual_index_list
-    elif opt.dataset == 'MARS':
+    elif dataset == 'MARS':
         # name formant: 0000C6T3036F006.jpg
         reg = r'T(.*?)F'
         sequence_dict = {}
@@ -107,7 +117,7 @@ def create_continual_index_list(opt, _train_dataset):
                 sequence_dict[ts] = [i]
         continual_index_list = list(sequence_dict.values())
         return continual_index_list
-    elif opt.dataset == 'MSMT17':
+    elif dataset == 'MSMT17':
         pass
     else:
-        raise RuntimeError('Invalid dataset.')
+        raise RuntimeError("Invalid dataset name. Please select from {'Market-1501', 'DukeMTMC', 'MARS', 'MSMT17'}")

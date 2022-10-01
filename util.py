@@ -286,3 +286,14 @@ def fuse_all_conv_bn(model):
         else:
             stack.append((name, module))
     return model
+
+
+def list_split(v, new_sequence_dict, split_index):
+    new_list = [v[i: i + 1000] for i in range(0, len(v), 1000)]
+    if len(new_list[-1]) < 1000:
+        last_list = new_list.pop()
+        new_list[-1] += last_list
+    for lst in new_list:
+        new_sequence_dict[split_index] = lst
+        split_index += 1
+    return new_sequence_dict, split_index
