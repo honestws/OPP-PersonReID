@@ -1,4 +1,6 @@
 import os
+import re
+
 import numpy as np
 import torch
 from torch import optim
@@ -67,7 +69,8 @@ def get_camera_person_info(_train_dataset, ith_indices):
 
 def create_continual_index_list(opt, _train_dataset):
     if opt.dataset == 'Market-1501':
-        # name format: 0002_c1s1_000451_03.jpg
+        # format: 0002_c1s1_000451_03.jpg
+        # six cameras
         sequence_dict = {}
         for i, (img_path, t) in enumerate(_train_dataset.imgs):
             img_name = os.path.basename(img_path)
@@ -91,5 +94,20 @@ def create_continual_index_list(opt, _train_dataset):
                 sequence_dict[cs] = [i]
         continual_index_list = list(sequence_dict.values())
         return continual_index_list
+    elif opt.dataset == 'MARS':
+        # name formant: 0000C6T3036F006.jpg
+        reg = r'T(.*?)F'
+        sequence_dict = {}
+        for i, (img_path, t) in enumerate(_train_dataset.imgs):
+            img_name = os.path.basename(img_path)
+            ts = re.findall(reg, img_name)[0]
+            if ts in sequence_dict.keys():
+                sequence_dict[ts].append(i)
+            else:
+                sequence_dict[ts] = [i]
+        continual_index_list = list(sequence_dict.values())
+        return continual_index_list
+    elif opt.dataset == 'MSMT17':
+        pass
     else:
         raise RuntimeError('Invalid dataset.')
