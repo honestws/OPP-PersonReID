@@ -96,7 +96,8 @@ def create_continual_index_list(dataset, _train_dataset):
         return continual_index_list
 
     elif dataset == 'MARS':
-        # name formant: 0000C6T3036F006.jpg
+        # name format: 0000C6T3036F006.jpg
+        # 6 cameras
         reg = r'C(.*?)F'
         sequence_dict = {}
         for i, (img_path, t) in enumerate(_train_dataset.imgs):
