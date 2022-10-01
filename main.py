@@ -35,8 +35,8 @@ if __name__ == '__main__':
     cross_entropy_loss = nn.CrossEntropyLoss()
 
     # create optimizer
-    optimizer_sft = create_optimizer(opt, model, optimizer='cci')
-    optimizer_ctr = create_optimizer(opt, model, optimizer='con')
+    optimizer_cci = create_optimizer(opt, model, optimizer='cci')
+    optimizer_con = create_optimizer(opt, model, optimizer='con')
     optimizer_ema = WeightEMA(opt, model, ema_model)
 
     # create image dataset
@@ -63,8 +63,7 @@ if __name__ == '__main__':
     print('The length of the continual index list is %d.' % len(continual_index_list))
 
     # create trainer
-    tr = Trainer(opt, optimizer_ctr, optimizer_sft, optimizer_ema,
-                 model, ema_model, writer, con_loss, mix_loss,
+    tr = Trainer(opt, optimizer_con, optimizer_cci, optimizer_ema, model, ema_model, writer, con_loss, mix_loss,
                  cross_entropy_loss, continual_index_list)
 
     # create dreamer

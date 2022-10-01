@@ -5,12 +5,12 @@ from util import average, get_targets, interleave, get_assigned_label, linear_ra
 
 
 class Trainer(object):
-    def __init__(self, opt, optimizer_ctr, optimizer_sft, optimizer_ema,
+    def __init__(self, opt, optimizer_con, optimizer_cci, optimizer_ema,
                  model, ema_model, writer, con_loss, mix_loss,
                  cross_entropy_loss, continual_index_list):
         self.opt = opt
-        self.optimizer_ctr = optimizer_ctr
-        self.optimizer_sft = optimizer_sft
+        self.optimizer_con = optimizer_con
+        self.optimizer_cci = optimizer_cci
         self.optimizer_ema = optimizer_ema
         self.model = model
         self.ema_model = ema_model
@@ -60,9 +60,9 @@ class Trainer(object):
                 reassigned_labels)
             con_loss = self.con_loss(z, reassigned_labels)
             loss = cross_entropy_loss + self.opt.main_loss_multiplier * con_loss
-            self.optimizer_ctr.zero_grad()
+            self.optimizer_con.zero_grad()
             loss.backward()
-            self.optimizer_ctr.step()
+            self.optimizer_con.step()
             self.optimizer_ema.step()
             self.writer.add_scalar("Cross entropy loss", cross_entropy_loss.item(), global_step=epoch)
             self.writer.add_scalar("Contrastive loss", con_loss.item(), global_step=epoch)
@@ -95,7 +95,7 @@ class Trainer(object):
             images = images_tr_1.cuda()
             bsz = images.size(0)
             _, logit, x = self.model(images)
-            # set soft-label learning loss
+            # set CVC learning loss
             a = torch.exp(-1*torch.cdist(x, self.feat_buffer)/(self.opt.sigma**2)).detach()
             _, idx = torch.topk(a, self.opt.nearest, dim=1)
             b = torch.zeros_like(a).cuda()
@@ -105,7 +105,7 @@ class Trainer(object):
             logit_max, _ = torch.max(logit, dim=1, keepdim=True)
             logit = logit - logit_max.detach()
             cvc_loss = torch.trace(-1 * w @ F.log_softmax(logit, dim=1).t())
-            self.writer.add_scalar("Soft-label learning loss", cvc_loss.item(), global_step=epoch)
+            self.writer.add_scalar("Cross-view correlation learning loss", cvc_loss.item(), global_step=epoch)
 
             if torch.cuda.is_available():
                 images_tr_1, images_tr_2 = images_tr_1.cuda(), images_tr_2.cuda()
@@ -148,7 +148,7 @@ class Trainer(object):
             self.writer.add_scalar("Mix loss", mix_loss.item(), global_step=epoch)
 
             loss = mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * cvc_loss
-            self.optimizer_sft.zero_grad()
+            self.optimizer_cci.zero_grad()
             loss.backward()
-            self.optimizer_sft.step()
+            self.optimizer_cci.step()
             self.optimizer_ema.step()
