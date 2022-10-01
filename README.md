@@ -1,5 +1,5 @@
 ![Python 3.8](https://img.shields.io/badge/python-3.8-green.svg)
-# Cross-view Similarity Cues for Online Person Re-Identification
+# Online Privacy Preservation for Person Re-Identification
 This repository is the PyTorch source code implementation of 
 [Online Privacy Preservation for Person Re-Identification]() and is currently being reviewed at CVPR 2023. In the following is an instruction to use the code
 to train and evaluate the WSC model on the [Market-1501](
