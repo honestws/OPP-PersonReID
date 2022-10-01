@@ -8,7 +8,7 @@ https://zheng-lab.cecs.anu.edu.au/Project/project_reid.html) dataset.
 ### Requirements
 
 Code was tested in virtual environment with Python 3.8 and 1 * RTX 3090 24G. 
-The full install packages in our virtual enviroment  were presented in the 'requirements.txt' file.
+The full install packages in our virtual enviroment  were presented in the 'requirements.txt' file. 
 
 ### Data preparation
 Download [Market1501 Dataset](https://zheng-lab.cecs.anu.edu.au/Project/project_reid.html) [[Google]](https://drive.google.com/file/d/0B8-rUzbwVRk0c054eEozWG9COHM/view) [[Baidu]](https://pan.baidu.com/s/1ntIi2Op)
