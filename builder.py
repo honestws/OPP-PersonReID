@@ -1,13 +1,11 @@
 import os
 import re
-
 import numpy as np
 import torch
 from torch import optim
 from torch.backends import cudnn
 from torch.utils.data import Subset
 from model import ResNet50
-from util import list_split
 
 
 def create_model(ema=False):
@@ -94,19 +92,12 @@ def create_continual_index_list(dataset, _train_dataset):
                 sequence_dict[cs].append(i)
             else:
                 sequence_dict[cs] = [i]
-        # split for data balance
-        new_sequence_dict = {}
-        split_index = 0
-        for k, v in sequence_dict.items():
-            if len(v) > 1600:
-                new_sequence_dict, split_index = list_split(v, new_sequence_dict, split_index)
-            else:
-                new_sequence_dict[k] = v
-        continual_index_list = list(new_sequence_dict.values())
+        continual_index_list = list(sequence_dict.values())
         return continual_index_list
+
     elif dataset == 'MARS':
         # name formant: 0000C6T3036F006.jpg
-        reg = r'T(.*?)F'
+        reg = r'C(.*?)F'
         sequence_dict = {}
         for i, (img_path, t) in enumerate(_train_dataset.imgs):
             img_name = os.path.basename(img_path)
@@ -115,9 +106,52 @@ def create_continual_index_list(dataset, _train_dataset):
                 sequence_dict[ts].append(i)
             else:
                 sequence_dict[ts] = [i]
+        new_sequence_dict = {}
+        key_index = 0
+        for k, v in sequence_dict.items():
+            if len(v) > 20000:
+                new_sequence_dict[key_index] = v
+                key_index += 1
+            else:
+                if key_index in new_sequence_dict.keys():
+                    if len(new_sequence_dict[key_index]) > 20000:
+                        key_index += 1
+                        new_sequence_dict[key_index] = v
+                        continue
+                    new_sequence_dict[key_index] += v
+                else:
+                    new_sequence_dict[key_index] = v
+
+        lst = []
+        key = None
+        for k, v in new_sequence_dict.items():
+            if len(v) < 20000:
+                lst = v
+                key = k
+        if key is not None:
+            del new_sequence_dict[key]
+        min_val = 1e10
+        for k, v in new_sequence_dict.items():
+            if len(v) < min_val:
+                key = k
+                min_val = len(v)
+        new_sequence_dict[key] += lst
+        # print(sum([len(v) for v in new_sequence_dict.values()]))
         continual_index_list = list(sequence_dict.values())
         return continual_index_list
+
     elif dataset == 'MSMT17':
-        pass
+        # format: 0000_c1_0000.jpg
+        # 15 cameras
+        sequence_dict = {}
+        for i, (img_path, t) in enumerate(_train_dataset.imgs):
+            img_name = os.path.basename(img_path)
+            ts = img_name.split('_')[1]
+            if ts in sequence_dict.keys():
+                sequence_dict[ts].append(i)
+            else:
+                sequence_dict[ts] = [i]
+        continual_index_list = list(sequence_dict.values())
+        return continual_index_list
     else:
         raise RuntimeError("Invalid dataset name. Please select from {'Market-1501', 'DukeMTMC', 'MARS', 'MSMT17'}")
