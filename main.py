@@ -57,7 +57,7 @@ if __name__ == '__main__':
         transforms.RandomHorizontalFlip(),
     ]
     dream_data_transform = transforms.Compose(dream_transform)
-    _train_dataset = DataFolder(root=opt.data_folder + 'train_all', transform=TransformTwice(train_data_transform))
+    _train_dataset = DataFolder(root=opt.data_folder, transform=TransformTwice(train_data_transform))
     # create continual index list
     continual_index_list = create_continual_index_list(opt.dataset, _train_dataset)
     print('The length of the continual index list is %d.' % len(continual_index_list))

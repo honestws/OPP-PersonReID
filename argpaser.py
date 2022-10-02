@@ -16,7 +16,7 @@ def argparse_option():
     # model dataset
     parser.add_argument('--dataset', type=str, default='Market-1501',
                         choices=['Market-1501', 'DukeMTMC', 'MARS', 'MSMT17'], help='dataset')
-    parser.add_argument('--data_folder', type=str, default='~/codes/WSC-PersonReID/Market-1501/pytorch/train_all',
+    parser.add_argument('--data_folder', type=str, default='~/codes/OPP-PersonReID/Market-1501/pytorch/train_all',
                         help='path to the custom dataset')
 
     # dream parameters
