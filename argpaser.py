@@ -2,7 +2,7 @@ import argparse
 
 
 def argparse_option():
-    parser = argparse.ArgumentParser('Arguments for WSC-PersonReID')
+    parser = argparse.ArgumentParser('Arguments for OPP-PersonReID')
     parser.add_argument('--dream_person', type=int, default=1, help='num of person for dreaming')
     parser.add_argument('--batch_size', type=int, default=32, help='batch_size')
     parser.add_argument('--num_workers', type=int, default=0, help='num of workers to use')
