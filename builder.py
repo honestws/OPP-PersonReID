@@ -138,7 +138,7 @@ def create_continual_index_list(dataset, _train_dataset):
                 min_val = len(v)
         new_sequence_dict[key] += lst
         # print(sum([len(v) for v in new_sequence_dict.values()]))
-        continual_index_list = list(sequence_dict.values())
+        continual_index_list = list(new_sequence_dict.values())
         return continual_index_list
 
     elif dataset == 'MSMT17':
