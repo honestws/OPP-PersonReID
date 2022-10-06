@@ -74,7 +74,7 @@ if __name__ == '__main__':
     camera_person_list = []
     begin_time = time.time()
     for i, ith_indices in enumerate(continual_index_list):
-        print('-----------------Processing the {}-th camera images-----------------'.format(i+1))
+        print('-----------------Processing the {}-th camera image sets-----------------'.format(i+1))
         train_dataloader = create_loader(opt, _train_dataset, ith_indices)
         camera_person, lab_dict = get_camera_person_info(_train_dataset, ith_indices)
         print('Number of camera person IDs is {}.'.format(camera_person))
