@@ -81,7 +81,7 @@ def create_continual_index_list(dataset, _train_dataset):
         continual_index_list = list(sequence_dict.values())
         return continual_index_list
 
-    elif dataset == 'DukeMTMC':
+    elif dataset == 'DukeMTMC-ReID':
         # format: 0315_c5_f0112364.jpg
         # 8 cameras
         sequence_dict = {}
@@ -155,4 +155,4 @@ def create_continual_index_list(dataset, _train_dataset):
         continual_index_list = list(sequence_dict.values())
         return continual_index_list
     else:
-        raise RuntimeError("Invalid dataset name. Please select from {'Market-1501', 'DukeMTMC', 'MARS', 'MSMT17'}")
+        raise RuntimeError("Invalid dataset name. Please select from {'Market-1501', 'DukeMTMC-ReID', 'MARS', 'MSMT17'}")

@@ -15,10 +15,12 @@ def argparse_option():
 
     # model dataset
     parser.add_argument('--dataset', type=str, default='Market-1501',
-                        choices=['Market-1501', 'DukeMTMC', 'MARS', 'MSMT17'], help='dataset')
+                        choices=['Market-1501', 'DukeMTMC-ReID', 'MARS', 'MSMT17'], help='dataset')
     parser.add_argument('--data_folder', type=str, default='~/codes/OPP-PersonReID/Market-1501/pytorch/',
+                        choices=['~/codes/OPP-PersonReID/DukeMTMC-ReID/pytorch/',
+                                 '~/codes/OPP-PersonReID/MARS/pytorch/',
+                                 '~/codes/OPP-PersonReID/MSMT17/pytorch/'],
                         help='path to the custom dataset')
-
     # dream parameters
     parser.add_argument('--r_feature', type=float, default=0.05,
                         help='coefficient for feature distribution regularization')

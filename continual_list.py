@@ -10,7 +10,7 @@ if __name__ == '__main__':
     _train_dataset = DataFolder(root=data_folder)
 
     # continual_index_list = create_continual_index_list('Market-1501', _train_dataset)
-    # continual_index_list = create_continual_index_list('DukeMTMC', _train_dataset)
+    # continual_index_list = create_continual_index_list('DukeMTMC-ReID', _train_dataset)
     continual_index_list = create_continual_index_list('MARS', _train_dataset)
     # continual_index_list = create_continual_index_list('MSMT17', _train_dataset)
     pass
