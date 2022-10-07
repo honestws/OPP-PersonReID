@@ -22,6 +22,12 @@ def create_model(ema=False):
 
 
 def create_optimizer(opt, model, optimizer):
+    if optimizer == 'cro':
+        incr_params = model.classifier.classifier.parameters()
+        optimizer = optim.SGD([
+            {'params': incr_params, 'lr': opt.lr}],
+            weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
+        return optimizer
     ignored_params = list(map(id, model.head.parameters())) + \
                      list(map(id, model.classifier.classifier.parameters())) + \
                      list(map(id, model.encoder.fc.parameters()))

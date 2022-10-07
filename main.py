@@ -35,7 +35,6 @@ if __name__ == '__main__':
     cross_entropy_loss = nn.CrossEntropyLoss()
 
     # create optimizer
-    optimizer_cci = create_optimizer(opt, model, optimizer='cci')
     optimizer_con = create_optimizer(opt, model, optimizer='con')
     optimizer_ema = WeightEMA(opt, model, ema_model)
 
@@ -83,8 +82,10 @@ if __name__ == '__main__':
         model.classifier.reset_classifier(camera_person)
         ema_model.classifier.reset_classifier(camera_person)
 
+        optimizer_cro = create_optimizer(opt, model, optimizer='cro')
+
         for e in tqdm(range(1, 5*opt.epochs+1), desc='1. Training within camera view'):
-            tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list)
+            tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list, optimizer_cro)
 
         dream_dataloader = dr.dream_images()
         tr.create_feature_buffer(dream_dataloader)

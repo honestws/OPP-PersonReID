@@ -1,16 +1,17 @@
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
+
+from builder import create_optimizer
 from util import average, get_targets, interleave, get_assigned_label, linear_rampup
 
 
 class Trainer(object):
-    def __init__(self, opt, optimizer_con, optimizer_cci, optimizer_ema,
+    def __init__(self, opt, optimizer_con, optimizer_ema,
                  model, ema_model, writer, con_loss, mix_loss,
                  cross_entropy_loss, continual_index_list):
         self.opt = opt
         self.optimizer_con = optimizer_con
-        self.optimizer_cci = optimizer_cci
         self.optimizer_ema = optimizer_ema
         self.model = model
         self.ema_model = ema_model
@@ -46,7 +47,7 @@ class Trainer(object):
         self.feat_buffer = torch.cat(feat_buffer, dim=0)
         assert self.feat_buffer.size(0) == self.ema_model.classifier.output_dim
 
-    def train_within_camera_view(self, train_dataloader, epoch, ith, lab_dict, camera_person_list):
+    def train_within_camera_view(self, train_dataloader, epoch, ith, lab_dict, camera_person_list, optimizer_cro):
         for step, (images, labels, indices) in enumerate(train_dataloader):
             reassigned_labels = get_assigned_label(labels, lab_dict)
             ims = images[0].cuda()
@@ -55,17 +56,22 @@ class Trainer(object):
 
             curr_idx = [i in self.continual_index_list[ith] for i in indices]
             assert len(curr_idx) == sum(curr_idx)
-            cross_entropy_loss = self.cross_entropy_loss(
-                logit[:, sum(camera_person_list[:ith]):sum(camera_person_list[:ith+1])],
-                reassigned_labels)
+
             con_loss = self.con_loss(z, reassigned_labels)
-            loss = cross_entropy_loss + self.opt.main_loss_multiplier * con_loss
             self.optimizer_con.zero_grad()
-            loss.backward()
+            con_loss.backward()
             self.optimizer_con.step()
             self.optimizer_ema.step()
-            self.writer.add_scalar("Cross entropy loss", cross_entropy_loss.item(), global_step=epoch)
+
+            cross_entropy_loss = self.cross_entropy_loss(
+                logit[:, sum(camera_person_list[:ith]):sum(camera_person_list[:ith + 1])],
+                reassigned_labels)
             self.writer.add_scalar("Contrastive loss", con_loss.item(), global_step=epoch)
+            optimizer_cro.zero_grad()
+            cross_entropy_loss.backward()
+            optimizer_cro.step()
+            self.optimizer_ema.step()
+            self.writer.add_scalar("Cross entropy loss", cross_entropy_loss.item(), global_step=epoch)
 
     def train_across_camera_view(self, train_dataloader, dream_dataloader, epoch, ith):
         train_iter = iter(train_dataloader)
@@ -73,6 +79,8 @@ class Trainer(object):
 
         len_train_iter = len(train_dataloader)
         len_dream_iter = len(dream_dataloader)
+
+        optimizer_cci = create_optimizer(self.opt, self.model, 'cci')
 
         for s in range(max(len_train_iter, len_dream_iter)+2):
             # +2 ensure the accessment of all data
@@ -148,7 +156,7 @@ class Trainer(object):
             self.writer.add_scalar("Mix loss", mix_loss.item(), global_step=epoch)
 
             loss = mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * cvc_loss
-            self.optimizer_cci.zero_grad()
+            optimizer_cci.zero_grad()
             loss.backward()
-            self.optimizer_cci.step()
+            optimizer_cci.step()
             self.optimizer_ema.step()
