@@ -73,7 +73,7 @@ if __name__ == '__main__':
     camera_person_list = []
     begin_time = time.time()
     for i, ith_indices in enumerate(continual_index_list):
-        print('-----------------Processing the {}-th camera image sets-----------------'.format(i+1))
+        print('-----------------Processing the {}-th camera data set-----------------'.format(i+1))
         train_dataloader = create_loader(opt, _train_dataset, ith_indices)
         camera_person, lab_dict = get_camera_person_info(_train_dataset, ith_indices)
         print('Number of camera person IDs is {}.'.format(camera_person))
@@ -83,15 +83,15 @@ if __name__ == '__main__':
         ema_model.classifier.reset_classifier(camera_person)
 
         optimizer_cro = create_optimizer(opt, model, optimizer='cro')
-
         for e in tqdm(range(1, 5*opt.epochs+1), desc='1. Training within camera view'):
             tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list, optimizer_cro)
 
         dream_dataloader = dr.dream_images()
         tr.create_feature_buffer(dream_dataloader)
 
+        optimizer_cci = create_optimizer(opt, model, optimizer='cci')
         for e in tqdm(range(1, opt.epochs+1), desc='4. Training across camera view'):
-            tr.train_across_camera_view(train_dataloader, dream_dataloader, e, i)
+            tr.train_across_camera_view(train_dataloader, dream_dataloader, e, i, optimizer_cci)
         print('Current output dimension is {}.'.format(ema_model.classifier.output_dim))
     end_time = time.time()
     run_time = round(end_time - begin_time)

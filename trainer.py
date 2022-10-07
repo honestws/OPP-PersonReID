@@ -66,21 +66,19 @@ class Trainer(object):
             cross_entropy_loss = self.cross_entropy_loss(
                 logit[:, sum(camera_person_list[:ith]):sum(camera_person_list[:ith + 1])],
                 reassigned_labels)
-            self.writer.add_scalar("Contrastive loss", con_loss.item(), global_step=epoch)
             optimizer_cro.zero_grad()
             cross_entropy_loss.backward()
             optimizer_cro.step()
             self.optimizer_ema.step()
-            self.writer.add_scalar("Cross entropy loss", cross_entropy_loss.item(), global_step=epoch)
+        self.writer.add_scalar("Contrastive loss", con_loss.item(), global_step=epoch)
+        self.writer.add_scalar("Cross entropy loss", cross_entropy_loss.item(), global_step=epoch)
 
-    def train_across_camera_view(self, train_dataloader, dream_dataloader, epoch, ith):
+    def train_across_camera_view(self, train_dataloader, dream_dataloader, epoch, ith, optimizer_cci):
         train_iter = iter(train_dataloader)
         dream_iter = iter(dream_dataloader)
 
         len_train_iter = len(train_dataloader)
         len_dream_iter = len(dream_dataloader)
-
-        optimizer_cci = create_optimizer(self.opt, self.model, 'cci')
 
         for s in range(max(len_train_iter, len_dream_iter)+2):
             # +2 ensure the accessment of all data
