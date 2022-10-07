@@ -1,8 +1,6 @@
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-
-from builder import create_optimizer
 from util import average, get_targets, interleave, get_assigned_label, linear_rampup
 
 
