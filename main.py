@@ -36,6 +36,8 @@ if __name__ == '__main__':
 
     # create optimizer
     optimizer_con = create_optimizer(opt, model, optimizer='con')
+    optimizer_cro = create_optimizer(opt, model, optimizer='cro')
+    optimizer_cci = create_optimizer(opt, model, optimizer='cci')
     optimizer_ema = WeightEMA(opt, model, ema_model)
 
     # create image dataset
@@ -82,16 +84,14 @@ if __name__ == '__main__':
         model.classifier.reset_classifier(camera_person)
         ema_model.classifier.reset_classifier(camera_person)
 
-        optimizer_cro = create_optimizer(opt, model, optimizer='cro')
         for e in tqdm(range(1, 5*opt.epochs+1), desc='1. Training within camera view'):
-            tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list, optimizer_cro)
+            tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list)
 
         dream_dataloader = dr.dream_images()
         tr.create_feature_buffer(dream_dataloader)
 
-        optimizer_cci = create_optimizer(opt, model, optimizer='cci')
         for e in tqdm(range(1, opt.epochs+1), desc='4. Training across camera view'):
-            tr.train_across_camera_view(train_dataloader, dream_dataloader, e, i, optimizer_cci)
+            tr.train_across_camera_view(train_dataloader, dream_dataloader, e, i)
         print('Current output dimension is {}.'.format(ema_model.classifier.output_dim))
     end_time = time.time()
     run_time = round(end_time - begin_time)
