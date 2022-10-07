@@ -62,7 +62,7 @@ if __name__ == '__main__':
     print('The length of the continual index list is %d.' % len(continual_index_list))
 
     # create trainer
-    tr = Trainer(opt, optimizer_con, optimizer_cci, optimizer_ema, model, ema_model, writer, con_loss, mix_loss,
+    tr = Trainer(opt, optimizer_con, optimizer_ema, model, ema_model, writer, con_loss, mix_loss,
                  cross_entropy_loss, continual_index_list)
 
     # create dreamer
