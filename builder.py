@@ -28,22 +28,25 @@ def create_optimizer(opt, model, optimizer):
             {'params': incr_params, 'lr': opt.lr}],
             weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
         return optimizer
+
     ignored_params = list(map(id, model.head.parameters())) + \
                      list(map(id, model.classifier.classifier.parameters())) + \
                      list(map(id, model.encoder.fc.parameters()))
     base_params = filter(lambda p: id(p) not in ignored_params, model.parameters())
-    if optimizer == 'cci':
-        incr_params = model.classifier.classifier.parameters()
-        optimizer = optim.SGD([
-            {'params': base_params, 'lr': 0.01 * opt.lr},
-            {'params': incr_params, 'lr': opt.lr}],
-            weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
-        return optimizer
-    elif optimizer == 'con':
+
+    if optimizer == 'con':
         cont_params = model.head.parameters()
         optimizer = optim.SGD([
-            {'params': base_params, 'lr': 0.01 * opt.lr},
+            {'params': base_params, 'lr': 1e-5 * opt.lr},
             {'params': cont_params, 'lr': opt.lr}],
+            weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
+        return optimizer
+
+    elif optimizer == 'cci':
+        incr_params = model.classifier.classifier.parameters()
+        optimizer = optim.SGD([
+            {'params': base_params, 'lr': 1e-5 * opt.lr},
+            {'params': incr_params, 'lr': opt.lr}],
             weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
         return optimizer
     else:

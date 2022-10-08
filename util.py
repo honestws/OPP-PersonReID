@@ -30,7 +30,7 @@ class DreamDataset(TensorDataset):
 
 
 class WeightEMA(object):
-    def __init__(self, opt, model, ema_model, alpha=0.9999):
+    def __init__(self, opt, model, ema_model, alpha=1):
         self.model = model
         self.ema_model = ema_model
         self.alpha = alpha

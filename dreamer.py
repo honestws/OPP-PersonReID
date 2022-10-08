@@ -42,7 +42,8 @@ class DeepInversionDreamer(object):
                  data_transform=None,
                  writer=None,
                  path='./final_images',
-                 jitter=(30, 15)):
+                 jitter=(30, 15),
+                 network_output_function=lambda x: x):
         """
         :param opt: parameter options
         :param net: Pytorch model to be inverted
@@ -51,6 +52,7 @@ class DeepInversionDreamer(object):
         :param writer: summary writer
         :param path: path where to write temporal images and data
         :param jitter: amount of random shift applied to image at every iteration
+        :param network_output_function:  function to be applied to the output of the network to get the output
         """
 
         # for reproducibility
@@ -60,6 +62,7 @@ class DeepInversionDreamer(object):
         self.writer = writer
         self.data_transform = data_transform
         self.dream_person = opt.dream_person
+        self.network_output_function = network_output_function
         self.image_resolution = [256, 128]
         self.do_flip = True
 
@@ -119,7 +122,7 @@ class DeepInversionDreamer(object):
 
         pooling_function = nn.modules.pooling.AvgPool2d(kernel_size=2)
         optimizer = None
-        iterations_per_layer = 1000
+        iterations_per_layer = self.opt.iteration
         best_inputs = []
         best_inputs_ = None
 
@@ -158,6 +161,7 @@ class DeepInversionDreamer(object):
                     optimizer.zero_grad()
                     net.zero_grad()
                     _, outputs, _ = net(ins_jit)
+                    outputs = self.network_output_function(outputs)
 
                     # R_cross classification loss
                     loss = criterion(outputs, tas)
@@ -194,7 +198,7 @@ class DeepInversionDreamer(object):
                     ins.data = clip(ins.data)
 
                     if best_cost > loss.item() or iteration == 1:
-                        best_inputs_ = ins.data.clone()
+                        best_inputs_ = ins.data.clone().detach()
                         best_cost = loss.item()
             best_inputs.append(best_inputs_)
 

@@ -57,8 +57,8 @@ class IncrementalBlock(nn.Module):
         return x, f
 
     def reset_classifier(self, num_new_ids):
-        past_weight = self.classifier[0].weight.data
-        past_bias = self.classifier[0].bias.data
+        past_weight = self.classifier[0].weight.data.clone().detach()
+        past_bias = self.classifier[0].bias.data.clone().detach()
         past_output_dim = len(past_bias)
         self.output_dim = num_new_ids + past_output_dim
         inc_classifier = []

@@ -33,6 +33,7 @@ def argparse_option():
     parser.add_argument('--main_loss_multiplier', type=float, default=10.0,
                         help='coefficient for the main loss in optimization')
     parser.add_argument('--ms', type=int, default=5000, help='memory size of dreamer')
+    parser.add_argument('--iteration', type=int, default=1, help='optimization iteration')
 
     # other setting
     parser.add_argument('--temp', type=float, default=0.5, help='temperature for loss function')
