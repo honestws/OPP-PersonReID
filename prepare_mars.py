@@ -30,3 +30,5 @@ for root, dirs, files in os.walk(test_path):
             dst_path = query_save_path + '/' + ID[0]  # first image is used as query image
             os.mkdir(dst_path)
         copyfile(src_path, dst_path + '/' + name)
+
+os.system('rm -rf ./MARS/pytorch/query/00-1')

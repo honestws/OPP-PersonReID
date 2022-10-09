@@ -57,7 +57,10 @@ if __name__ == '__main__':
         transforms.RandomHorizontalFlip(),
     ]
     dream_data_transform = transforms.Compose(dream_transform)
-    _train_dataset = DataFolder(root=opt.data_folder + 'train_all', transform=TransformTwice(train_data_transform))
+    if opt.dataset in ['Martket-1501', 'DukeMTMC-Re-ID', 'MSMT17']:
+        _train_dataset = DataFolder(root=opt.data_folder + 'train_all', transform=TransformTwice(train_data_transform))
+    else:
+        _train_dataset = DataFolder(root=opt.data_folder + 'bbox_train', transform=TransformTwice(train_data_transform))
     # create continual index list
     continual_index_list = create_continual_index_list(opt.dataset, _train_dataset)
     print('The length of the continual index list is %d.' % len(continual_index_list))
@@ -69,12 +72,14 @@ if __name__ == '__main__':
     # create dreamer
     dr = DeepInversionDreamer(opt, ema_model, cross_entropy_loss, dream_data_transform, writer)
 
-    # create data loader
     dream_dataloader = None
     camera_person_list = []
+    ema_model.eval()
+
     begin_time = time.time()
     for i, ith_indices in enumerate(continual_index_list):
         print('-----------------Processing the {}-th camera data set-----------------'.format(i+1))
+        # create data loader
         train_dataloader = create_loader(opt, _train_dataset, ith_indices)
         camera_person, lab_dict = get_camera_person_info(_train_dataset, ith_indices)
         print('Number of camera person IDs is {}.'.format(camera_person))
@@ -83,13 +88,13 @@ if __name__ == '__main__':
         model.classifier.reset_classifier(camera_person)
         ema_model.classifier.reset_classifier(camera_person)
 
-        optimizer_cro = create_optimizer(opt, model, optimizer='cro')
-        for e in tqdm(range(1, 5*opt.epochs+1), desc='1. Training within camera view'):
-            tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list, optimizer_cro)
-
-        dream_dataloader = dr.dream_images()
-        tr.create_feature_buffer(dream_dataloader)
-
+        # optimizer_cro = create_optimizer(opt, model, optimizer='cro')
+        # for e in tqdm(range(1, 5*opt.epochs+1), desc='1. Training within camera view'):
+        #     tr.train_within_camera_view(train_dataloader, e, i, lab_dict, camera_person_list, optimizer_cro)
+        #
+        # dream_dataloader = dr.dream_images()
+        # tr.create_feature_buffer(dream_dataloader)
+        #
         # optimizer_cci = create_optimizer(opt, model, optimizer='cci')
         # for e in tqdm(range(1, opt.epochs+1), desc='4. Training across camera view'):
         #     tr.train_across_camera_view(train_dataloader, dream_dataloader, e, i, optimizer_cci)
@@ -105,7 +110,6 @@ if __name__ == '__main__':
     # save_network(ema_model)
     # ema_model.classifier.reset_classifier(3541)
     # ema_model = load_network(ema_model)
-    ema_model = ema_model.eval()
     ema_model = fuse_all_conv_bn(ema_model)
 
     # evaluate

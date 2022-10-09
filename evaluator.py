@@ -20,8 +20,12 @@ class Evaluator(object):
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
-        image_datasets = {x: DataFolder(
-            os.path.join(opt.data_folder, x), data_transforms) for x in ['gallery', 'query']}
+        if opt.dataset == 'MARS':
+            image_datasets = {x: DataFolder(
+                os.path.join(opt.data_folder + 'pytorch', x), data_transforms) for x in ['gallery', 'query']}
+        else:
+            image_datasets = {x: DataFolder(
+                os.path.join(opt.data_folder, x), data_transforms) for x in ['gallery', 'query']}
 
         gallery_path = image_datasets['gallery'].imgs
         query_path = image_datasets['query'].imgs
@@ -87,12 +91,20 @@ class Evaluator(object):
         for path, v in img_path:
             filename = os.path.basename(path)
             label = filename[0:4]
-            camera = filename.split('c')[1]
-            if label[0:2] == '-1':
-                labels.append(-1)
+            if self.opt.dataset == 'MARS':
+                camera = filename.split('C')[1]
+                if label[2:] == '-1':
+                    labels.append(-1)
+                else:
+                    labels.append(int(label))
+                camera_id.append(int(camera[0]))
             else:
-                labels.append(int(label))
-            camera_id.append(int(camera[0]))
+                camera = filename.split('c')[1]
+                if label[0:2] == '-1':
+                    labels.append(-1)
+                else:
+                    labels.append(int(label))
+                camera_id.append(int(camera[0]))
         return np.array(camera_id), np.array(labels)
 
     def evaluate(self, query_feature, gallery_feature):

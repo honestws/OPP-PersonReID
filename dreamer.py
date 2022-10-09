@@ -25,8 +25,10 @@ class DreamerFeatureHook(object):
 
         # forcing mean and variance to match between two distributions
         # other ways might work better, i.g. KL divergence
-        r_feature = torch.norm(module.running_var.data - var, 2) + torch.norm(
-            module.running_mean.data - mean, 2)
+        model_var = module.running_var.data.clone().detach()
+        model_mean = module.running_mean.data.clone().detach()
+        r_feature = torch.norm(model_var - var, 2) + torch.norm(
+            model_mean - mean, 2)
 
         self.r_feature = r_feature
 
@@ -42,8 +44,7 @@ class DeepInversionDreamer(object):
                  data_transform=None,
                  writer=None,
                  path='./final_images',
-                 jitter=(30, 15),
-                 network_output_function=lambda x: x):
+                 jitter=(30, 15)):
         """
         :param opt: parameter options
         :param net: Pytorch model to be inverted
@@ -52,7 +53,6 @@ class DeepInversionDreamer(object):
         :param writer: summary writer
         :param path: path where to write temporal images and data
         :param jitter: amount of random shift applied to image at every iteration
-        :param network_output_function:  function to be applied to the output of the network to get the output
         """
 
         # for reproducibility
@@ -62,7 +62,6 @@ class DeepInversionDreamer(object):
         self.writer = writer
         self.data_transform = data_transform
         self.dream_person = opt.dream_person
-        self.network_output_function = network_output_function
         self.image_resolution = [256, 128]
         self.do_flip = True
 
@@ -161,7 +160,6 @@ class DeepInversionDreamer(object):
                     optimizer.zero_grad()
                     net.zero_grad()
                     _, outputs, _ = net(ins_jit)
-                    outputs = self.network_output_function(outputs)
 
                     # R_cross classification loss
                     loss = criterion(outputs, tas)
