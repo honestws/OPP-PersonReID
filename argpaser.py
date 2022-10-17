@@ -14,9 +14,9 @@ def argparse_option():
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 
     # model dataset
-    parser.add_argument('--dataset', type=str, default='DukeMTMC-ReID',
+    parser.add_argument('--dataset', type=str, default='Market-1501',
                         choices=['Market-1501', 'DukeMTMC-ReID', 'MARS', 'MSMT17'], help='dataset')
-    parser.add_argument('--data_folder', type=str, default='~/codes/OPP-PersonReID/DukeMTMC-ReID/pytorch/',
+    parser.add_argument('--data_folder', type=str, default='~/codes/OPP-PersonReID/Market-1501/pytorch/',
                         choices=['~/codes/OPP-PersonReID/Market-1501/pytorch/',
                                  '~/codes/OPP-PersonReID/DukeMTMC-ReID/pytorch/',
                                  '~/codes/OPP-PersonReID/MARS/',

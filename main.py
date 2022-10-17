@@ -57,7 +57,7 @@ if __name__ == '__main__':
         transforms.RandomHorizontalFlip(),
     ]
     dream_data_transform = transforms.Compose(dream_transform)
-    if opt.dataset in ['Martket-1501', 'DukeMTMC-ReID', 'MSMT17']:
+    if opt.dataset in ['Market-1501', 'DukeMTMC-ReID', 'MSMT17']:
         _train_dataset = DataFolder(root=opt.data_folder + 'train_all', transform=TransformTwice(train_data_transform))
     else:
         _train_dataset = DataFolder(root=opt.data_folder + 'bbox_train', transform=TransformTwice(train_data_transform))
