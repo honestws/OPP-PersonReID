@@ -48,6 +48,8 @@ class Trainer(object):
     def train_within_camera_view(self, train_dataloader, epoch, ith, lab_dict, camera_person_list, optimizer_cro):
         for step, (images, labels, indices) in enumerate(train_dataloader):
             reassigned_labels = get_assigned_label(labels, lab_dict)
+            if len(reassigned_labels) <= 1:
+                continue
             ims = images[0].cuda()
             reassigned_labels = reassigned_labels.cuda()
             z, logit, _ = self.model(ims)

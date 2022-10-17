@@ -108,6 +108,8 @@ class DeepInversionDreamer(object):
         if rest == 1:
             split_list = [self.dream_person * 64] * num_batch
             split_list[-1] += 1
+        elif rest == 0:
+            split_list = [self.dream_person * 64] * num_batch
         else:
             split_list = [self.dream_person * 64] * num_batch + [rest]
         assert sum(split_list) == gen_num

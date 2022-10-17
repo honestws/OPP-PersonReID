@@ -124,4 +124,5 @@ class Evaluator(object):
 
         CMC = CMC.float()
         CMC = CMC / len(self.query_label)
-        print('Rank@1:%f Rank@5:%f Rank@10:%f mAP:%f' % (CMC[0], CMC[4], CMC[9], ap / len(self.query_label)))
+        print('Rank@1: %f Rank@5: %f Rank@10: %f Rank@20: %f mAP: %f' %
+              (CMC[0], CMC[4], CMC[9], CMC[19], ap / len(self.query_label)))

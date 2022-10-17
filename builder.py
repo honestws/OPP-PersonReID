@@ -37,7 +37,7 @@ def create_optimizer(opt, model, optimizer):
     if optimizer == 'con':
         cont_params = model.head.parameters()
         optimizer = optim.SGD([
-            {'params': base_params, 'lr': 1e-5 * opt.lr},
+            {'params': base_params, 'lr': 1e-2 * opt.lr},
             {'params': cont_params, 'lr': opt.lr}],
             weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
         return optimizer
@@ -45,7 +45,7 @@ def create_optimizer(opt, model, optimizer):
     elif optimizer == 'cci':
         incr_params = model.classifier.classifier.parameters()
         optimizer = optim.SGD([
-            {'params': base_params, 'lr': 1e-5 * opt.lr},
+            {'params': base_params, 'lr': 1e-2 * opt.lr},
             {'params': incr_params, 'lr': opt.lr}],
             weight_decay=opt.weight_decay, momentum=opt.momentum, nesterov=True)
         return optimizer
@@ -79,6 +79,7 @@ def create_continual_index_list(dataset, _train_dataset):
     if dataset == 'Market-1501':
         # format: 0002_c1s1_000451_03.jpg
         # 6 cameras
+        # 25 data sets
         sequence_dict = {}
         for i, (img_path, t) in enumerate(_train_dataset.imgs):
             img_name = os.path.basename(img_path)
@@ -107,6 +108,7 @@ def create_continual_index_list(dataset, _train_dataset):
     elif dataset == 'MARS':
         # format: 0000C6T3036F006.jpg
         # 6 cameras
+        # 22 data sets
         reg = r'C(.*?)F'
         sequence_dict = {}
         for i, (img_path, t) in enumerate(_train_dataset.imgs):
