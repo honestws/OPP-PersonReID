@@ -6,10 +6,10 @@ def argparse_option():
     parser.add_argument('--dream_person', type=int, default=1, help='num of person for dreaming')
     parser.add_argument('--batch_size', type=int, default=32, help='batch_size')
     parser.add_argument('--num_workers', type=int, default=0, help='num of workers to use')
-    parser.add_argument('--epochs', type=int, default=1, help='number of training epochs')
+    parser.add_argument('--epochs', type=int, default=50, help='number of training epochs')
 
     # optimization
-    parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
+    parser.add_argument('--lr', type=float, default=1e-3, help='learning rate')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='weight decay')
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 
@@ -34,7 +34,7 @@ def argparse_option():
     parser.add_argument('--main_loss_multiplier', type=float, default=10.0,
                         help='coefficient for the main loss in optimization')
     parser.add_argument('--ms', type=int, default=5000, help='memory size of dreamer')
-    parser.add_argument('--iteration', type=int, default=1, help='optimization iteration')
+    parser.add_argument('--iteration', type=int, default=1000, help='optimization iteration')
 
     # other setting
     parser.add_argument('--temp', type=float, default=0.5, help='temperature for loss function')
