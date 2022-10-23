@@ -2,7 +2,7 @@
 # Online Privacy Preservation for Person Re-Identification
 This repository is the PyTorch source code implementation of 
 [Online Privacy Preservation for Person Re-Identification]() and is currently being reviewed at CVPR 2023. In the following is an instruction to use the code
-to train and evaluate the WSC model on the [Market-1501](
+to train and evaluate the OPP model on the [Market-1501](
 https://zheng-lab.cecs.anu.edu.au/Project/project_reid.html) dataset.
 
 ### Requirements
@@ -78,9 +78,9 @@ After downloading *teacher.pth*, please put it into *./net/* folder.
 
 ### Run the code
 
-Please enter the main folder, Train the WSC model by
+Please enter the main folder, Train the OPP model by
 ```bash
-python main.py --dream_person 1 --ms 5000 --T 2.0 --lamb 0.05 --sigma 1.0 --batch_size 32  --data_dir your_project_path/WSC-PersonReID/Market-1501/pytorch/
+python main.py --dream_person 1 --ms 5000 --T 2.0 --lamb 0.05 --sigma 1.0 --batch_size 32  --data_dir your_project_path/OPP-PersonReID/Market-1501/pytorch/
 ```
 `--dream_person` num of person for dreaming.
 
