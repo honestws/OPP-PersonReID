@@ -72,7 +72,7 @@ in a neater format for different subdirectories, files and folders in our experi
 Futhermore, you also can test our code on [DukeMTMC-reID Dataset]([GoogleDriver](https://drive.google.com/open?id=1jjE85dRCMOgRtvJ5RQV9-Afs-2_5dY3O) or ([BaiduYun](https://pan.baidu.com/s/1jS0XM7Var5nQGcbf9xUztw) password: bhbh)).
 ### Model preparation
 Please find the pretrained teacher Re-ID model in
-[BaiduPan](https://pan.baidu.com/s/15h4UAkAMghtVCZUcz24OFw) (password: bwsa) or [GoogleDrive](https://drive.google.com/file/d/1kkktMdezg6oyUuhrXRKuQb6lFqPROj8-/view?usp=sharing).
+[BaiduPan](https://pan.baidu.com/s/15h4UAkAMghtVCZUcz24OFw) (password: bwsa).
 After downloading *teacher.pth*, please put it into *./net/* folder.
 
 
