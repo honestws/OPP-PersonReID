@@ -124,6 +124,9 @@ class Trainer(object):
                 _, outputs_dr_1, _ = self.model(images_dr_1)
                 _, outputs_dr_2, _ = self.model(images_dr_2)
 
+                _, ema_outputs_tr_1, _ = self.ema_model(images_tr_1)
+                _, ema_outputs_dr_1, _ = self.ema_model(images_dr_1)
+
                 targets_tr = get_targets(self.opt, outputs_tr_1, outputs_tr_2)
                 targets_dr = get_targets(self.opt, outputs_dr_1, outputs_dr_2)
 
