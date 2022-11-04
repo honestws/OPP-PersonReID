@@ -102,7 +102,7 @@ class Trainer(object):
             images = images_tr_1.cuda()
             bsz = images.size(0)
             _, logit, x = self.model(images)
-            # set CVC learning loss
+            # set CCC learning loss
             a = torch.exp(-1*torch.cdist(x, self.feat_buffer)/(self.opt.sigma**2)).clone().detach()
             _, idx = torch.topk(a, self.opt.nearest, dim=1)
             b = torch.zeros_like(a).cuda()
@@ -111,8 +111,8 @@ class Trainer(object):
             w = F.normalize(a * b, p=1, dim=1)
             logit_max, _ = torch.max(logit, dim=1, keepdim=True)
             logit = logit - logit_max.clone().detach()
-            cvc_loss = torch.trace(-1 * w @ F.log_softmax(logit, dim=1).t())
-            self.writer.add_scalar("Cross-view correlation learning loss", cvc_loss.item(), global_step=epoch)
+            ccc_loss = torch.trace(-1 * w @ F.log_softmax(logit, dim=1).t())
+            self.writer.add_scalar("Cross-camera correlation learning loss", ccc_loss.item(), global_step=epoch)
 
             if torch.cuda.is_available():
                 images_tr_1, images_tr_2 = images_tr_1.cuda(), images_tr_2.cuda()
@@ -154,7 +154,7 @@ class Trainer(object):
             mix_loss = self.mix_loss(logits, mixed_target)
             self.writer.add_scalar("Mix loss", mix_loss.item(), global_step=epoch)
 
-            loss = mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * cvc_loss
+            loss = mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * ccc_loss
             optimizer_cci.zero_grad()
             loss.backward()
             optimizer_cci.step()

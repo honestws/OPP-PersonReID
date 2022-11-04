@@ -71,7 +71,7 @@ class IncrementalBlock(nn.Module):
             self.classifier[0].bias.data[:past_output_dim] = past_bias
 
 
-# Define the ResNet50 Model for the WSC-PersonReID experiment setup
+# Define the ResNet50 Model for the OPP-PersonReID experiment setup
 class ResNet50(nn.Module):
     def __init__(self, stride=1, feat_dim=128):
         super(ResNet50, self).__init__()
