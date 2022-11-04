@@ -133,7 +133,7 @@ class Trainer(object):
             # distillation loss
             distillation_loss = self.cross_entropy_loss(
                 torch.cat([outputs_tr_1, outputs_dr_1], dim=0),
-                F.log_softmax(torch.cat([ema_outputs_tr_1, ema_outputs_dr_1], dim=0)).detach())
+                F.log_softmax(torch.cat([ema_outputs_tr_1, ema_outputs_dr_1])).detach())
 
             self.writer.add_scalar("Distillation loss", distillation_loss.item(), global_step=epoch)
 
