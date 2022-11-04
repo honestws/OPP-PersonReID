@@ -130,10 +130,12 @@ class Trainer(object):
                 targets_tr = get_targets(self.opt, outputs_tr_1, outputs_tr_2)
                 targets_dr = get_targets(self.opt, outputs_dr_1, outputs_dr_2)
 
-            # for distillation loss
+            # distillation loss
             distillation_loss = self.cross_entropy_loss(
                 torch.cat([outputs_tr_1, outputs_dr_1], dim=0),
                 F.log_softmax(torch.cat([ema_outputs_tr_1, ema_outputs_dr_1], dim=0)).detach())
+
+            self.writer.add_scalar("Distillation loss", distillation_loss.item(), global_step=epoch)
 
             all_inputs = torch.cat([images_tr_1, images_tr_2, images_dr_1, images_dr_2], dim=0)
             all_targets = torch.cat([targets_tr, targets_tr, targets_dr, targets_dr], dim=0)
@@ -162,7 +164,7 @@ class Trainer(object):
             mix_loss = self.mix_loss(logits, mixed_target)
             self.writer.add_scalar("Mix loss", mix_loss.item(), global_step=epoch)
 
-            loss = mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * ccc_loss
+            loss = distillation_loss + mix_loss + self.opt.lamb * linear_rampup(ith, self.len_continual_index_list) * ccc_loss
             optimizer_cci.zero_grad()
             loss.backward()
             optimizer_cci.step()
