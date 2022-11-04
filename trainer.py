@@ -131,9 +131,9 @@ class Trainer(object):
                 targets_dr = get_targets(self.opt, outputs_dr_1, outputs_dr_2)
 
             # for distillation loss
-            cross_entropy_loss = self.cross_entropy_loss(
-                logit[:, sum(camera_person_list[:ith]):sum(camera_person_list[:ith + 1])],
-                reassigned_labels)
+            distillation_loss = self.cross_entropy_loss(
+                torch.cat([outputs_tr_1, outputs_dr_1], dim=0),
+                F.log_softmax(torch.cat([ema_outputs_tr_1, ema_outputs_dr_1], dim=0)))
 
             all_inputs = torch.cat([images_tr_1, images_tr_2, images_dr_1, images_dr_2], dim=0)
             all_targets = torch.cat([targets_tr, targets_tr, targets_dr, targets_dr], dim=0)
